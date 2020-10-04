@@ -13,7 +13,7 @@ class Itinerary():
         self.flight_price += flight.price
         self.bag_price += flight.bag_price
 
-    def is_on_time_for(departure_time,min_transfer, max_transfer):
+    def is_on_time_for(self,departure_time,min_transfer, max_transfer):
         last_arival = self.get_last_arival()
         if last_arival is None:
             return True

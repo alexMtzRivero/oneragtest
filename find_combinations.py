@@ -4,16 +4,17 @@ from Models.flight import Flight
 from Models.itinerary import Itinerary
 def read_input():
     """
-    Reads a flights csv file from a shell pipe and returns a formated dictionary 
-    with: 
-        airport code as key and,
-        a list of flights going out from this airport as the value. 
+    Reads a flights csv file from a shell pipe and returns a formated dictionary  
         
     :return:{ 
-            source_airport_code:[flight,...],
-            source_airport_code:[flight,...],
-            ... 
-            }
+            'USM':{
+                'HKT':[Flight,...],
+                'DPS':[Flight,...], ...
+            },
+            from_airport:{
+                to_airport:[Flight,...],
+                to_airport:[Flight,...], ...
+            },...
     """
     departure_airports = {}
     line_count = 0
@@ -49,7 +50,7 @@ def get_combinations_of(airports,code_from,_itinerary,itineraries,bags = 0, min_
                 bags_allowed = bags <= flight.bags_allowed
                 on_time = itinerary.is_on_time_for(flight.departure,min_transfer,max_transfer)
                 if bags_allowed and on_time:
-                    visited = code_to in itinerary.path
+                    visited = code_to in itinerary.string_path
                     if not visited:
                         itinerary.add(flight)
                         itineraries.append(itinerary)
@@ -66,13 +67,13 @@ def get_combinations_of(airports,code_from,_itinerary,itineraries,bags = 0, min_
 
 def main():
     airports = read_input()
-    departure = "C"
-    itinerary = Itinerary(departure)
-    itineraries = get_combinations_of(airports,departure,itinerary,[],bags=2)
-    a,b = datetime.strptime("2017-02-11T06:25:00","%Y-%m-%dT%H:%M:%S" ) , datetime.strptime("2017-02-11T07:25:00","%Y-%m-%dT%H:%M:%S")
-    print((b-a) > timedelta(hours=1))
-    for i in itineraries:
-        print(i)
+    result = []
+    for departure in airports:
+        itinerary = Itinerary(departure)
+        itineraries = get_combinations_of(airports,departure,itinerary,[],bags=0)
+        result.extend(itineraries)
+    for i in result:
+        print(i,file=sys.stdout)
 
                    
 
