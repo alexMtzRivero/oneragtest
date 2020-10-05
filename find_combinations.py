@@ -67,7 +67,7 @@ def get_combinations_of(segments,code_from,_itinerary,itineraries,bags = 0, min_
         for flight in segments[code_from][code_to]:
             # we create a new itinerary  based on the one that we are following 
             itinerary = copy.deepcopy(_itinerary)
-            #check the requirement to take the flight
+            #check the requirements to take the flight
             bags_allowed = bags <= flight.bags_allowed
             on_time = itinerary.is_on_time_for(flight.departure,min_transfer,max_transfer)
             if bags_allowed and on_time:
@@ -92,12 +92,17 @@ def search_all_combinations(segments):
         result.extend(itineraries)
     return result
 
+def print_itineraries(result):
+    print(Itinerary.get_headers(),file=sys.stdout)
+    for itinerary in result:
+        print(itinerary,file=sys.stdout)
+
 def main():
     segments = read_input()
     result = search_all_combinations(segments)
     
-    for i in result:
-        print(i,file=sys.stdout)
+    print_itineraries(result)
+ 
 
                    
 if __name__ == "__main__":

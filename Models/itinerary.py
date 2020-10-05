@@ -7,21 +7,29 @@ class Itinerary():
         """
         self.string_path = [origin_code]
         self.path = []
-        self.flight_price = 0
+        self.price = 0
         self.bag_price = 0
         self.max_bags = 0
+        self.waiting_time = timedelta(hours= 0)
 
     def add(self, flight):
         """
-        Appends a flight to our path and sums the cost of taking thath flight
+        Appends a flight to our path and sums the cost of taking that flight
         """
-        self.string_path.append(flight.destination)
-        self.path.append(flight)
-        self.flight_price += flight.price
-        self.bag_price += flight.bag_price
+        if len(self.path)>=1:
+            self.waiting_time += flight.departure - self.path[-1].arrival 
+
         if flight.bags_allowed > self.max_bags:
             self.max_bags = flight.bags_allowed
 
+        self.price += flight.price
+        self.bag_price += flight.bag_price
+        
+        self.string_path.append(flight.destination)
+        self.path.append(flight)
+        
+
+        
     def is_on_time_for(self,departure_time,min_transfer, max_transfer):
         """
         Checks if we can get on time for a departure time given
@@ -34,6 +42,7 @@ class Itinerary():
         """
         last_arival = self.get_last_arival()
         if last_arival is None:
+            #if it has no last_rival it means that this is the fitst departure time
             return True
         else:
             dif = departure_time - last_arival
@@ -45,5 +54,31 @@ class Itinerary():
     def get_last_arival(self):
         return None if len(self.path) == 0 else self.path[-1].arrival
     
+    def get_flights_path(self): 
+        return '-'.join(flight.flight_number for flight in self.path)
+    
+    def get_airport_path(self):
+        return '-'.join(self.string_path)
+    
+    def get_info(self, _format = "csv"):
+        data = {
+            'airports': self. get_airport_path(),
+            'flights': self.get_flights_path(),
+            'total_time': (self.path[-1].arrival - self.path[0].departure),
+            'waiting_time': self.waiting_time,
+            'transfers': len(self.path)-1,
+            'bags_allowed': self.max_bags,
+            'price': self.price,
+            'bag_price': self.bag_price
+        }
+
+        if _format == "csv":
+            return ','.join( [str(v) for v in data.values()])
+        else:
+            return data
+
     def __str__(self):
-        return ','.join(self.string_path) #+ str(self.flight_price)
+        return self.get_info()
+    @staticmethod
+    def get_headers():
+        return ','.join(['flights','airports','total_time','waiting_time','transfers','bags_allowed','price','bag_price'])
