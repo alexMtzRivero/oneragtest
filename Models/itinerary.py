@@ -49,18 +49,34 @@ class Itinerary():
             return dif >= timedelta(hours=min_transfer) and dif <= timedelta(hours=max_transfer)
 
     def get_origin(self):
+        """
+        :return str: code of the first departure airport
+        """
         return self.string_path[0] 
     
     def get_last_arival(self):
+        """
+        :return datetime: last flight arrival
+        """
         return None if len(self.path) == 0 else self.path[-1].arrival
     
     def get_flights_path(self): 
+        """
+        :return str: all the flight numbers of the path separated by a '-'
+        """
         return '-'.join(flight.flight_number for flight in self.path)
     
     def get_airport_path(self):
+        """
+        :return str: all the airport codes of the path separated by a '-'
+        """
         return '-'.join(self.string_path)
     
-    def get_info(self, _format = "csv"):
+    def get_info(self, _format = "dict"):
+        """
+        :param str _format: fomat to return the info |'csv'|'dict'|
+        :return any: data of the object with the asked format 
+        """
         data = {
             'airports': self. get_airport_path(),
             'flights': self.get_flights_path(),
@@ -78,7 +94,11 @@ class Itinerary():
             return data
 
     def __str__(self):
-        return self.get_info()
+        return self.get_info(_format="csv")
+
     @staticmethod
     def get_headers():
+        """
+        :return str: headers for outputing ths class as a csv file
+        """
         return ','.join(['flights','airports','total_time','waiting_time','transfers','bags_allowed','price','bag_price'])
