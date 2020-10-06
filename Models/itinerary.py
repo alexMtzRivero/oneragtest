@@ -101,4 +101,4 @@ class Itinerary():
         """
         :return str: headers for outputing ths class as a csv file
         """
-        return ','.join(['flights','airports','total_time','waiting_time','transfers','bags_allowed','price','bag_price'])
+        return ','.join(['airports','flights','total_time','waiting_time','transfers','bags_allowed','price','bag_price'])
