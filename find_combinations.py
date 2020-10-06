@@ -2,11 +2,7 @@ import sys, copy
 from datetime import datetime, timedelta 
 from Models.flight import Flight 
 from Models.itinerary import Itinerary
-## TODO:    
-# - format print to CSV and JSON
-# - coment code
-# - refactor some parts
-# - write readme
+
 
 def read_input():
     """Reads a flights csv file from a shell pipe and returns a formated dictionary  
@@ -24,25 +20,30 @@ def read_input():
     departure_airports = {}
     line_count = 0
     #read input
-    for line in sys.stdin:
-        if line_count == 0:
-            #do stuff with the csv headers if you want
-            line_count+=1
-        else:
-            #removes whitespace and end line characters "\n" "\r"
-            line = line.rstrip()
-            #creates flight object with csv data 
-            flight = Flight(*line.split(','))
-            
-            #format data
-            if flight.source not in departure_airports:
-               departure_airports[flight.source] = {}
-            if flight.destination not in departure_airports[flight.source]:
-               departure_airports[flight.source][flight.destination] = [] 
-            departure_airports[flight.source][flight.destination].append(flight)
+    try:
+        for line in sys.stdin:
+            if line_count == 0:
+                #do stuff with the csv headers if you want
+                line_count+=1
+            else:
+                #removes whitespace and end line characters "\n" "\r"
+                line = line.rstrip()
+                #creates flight object with csv data 
+                flight = Flight(*line.split(','))
+                
+                #format data
+                if flight.source not in departure_airports:
+                    departure_airports[flight.source] = {}
+                if flight.destination not in departure_airports[flight.source]:
+                    departure_airports[flight.source][flight.destination] = [] 
 
-    return departure_airports
-
+                departure_airports[flight.source][flight.destination].append(flight)
+        
+        return departure_airports
+    
+    except Exception as e:
+        print("invalid input found.",file=sys.stderr)
+        raise
 
 
 def get_combinations_of(segments,code_from,_itinerary,itineraries,bags = 0, min_transfer = 1, max_transfer = 4):
@@ -93,14 +94,20 @@ def search_all_combinations(segments):
     return result
 
 def print_itineraries(result):
+    """
+    :param [Itinerary] result: itineraries to output
+    outputs the itineraries to sys.stdout
+    """
     print(Itinerary.get_headers(),file=sys.stdout)
     for itinerary in result:
         print(itinerary,file=sys.stdout)
 
+
+
+
 def main():
     segments = read_input()
     result = search_all_combinations(segments)
-    
     print_itineraries(result)
  
 
